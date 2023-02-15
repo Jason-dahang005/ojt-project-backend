@@ -40,11 +40,12 @@ class AuthenticationController extends BaseController
 
     public function login(Request $request)
     {
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
-            $user = Auth::user();
+        $credential = $request->only('email', 'password');
+        if(Auth::guard('web')->attempt($credential)){
+           $user = User::query()->where('email', $request['email'])->first();
             $success = $user;
-            $success['roles'] = $user->roles;
-            $success['token'] = $user->createToken('my_token')->accessToken;
+            //$success['roles'] = $user->roles;
+            $success['token'] = $user->createToken('Personal Access Token')->accessToken;
             return $this->sendResponse($success, 'Login Succesfully!');
         }else{
             return $this->sendError('Unauthorized.', ['error' => 'Unauthorized']);

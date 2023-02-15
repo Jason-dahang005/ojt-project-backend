@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\rolesController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,9 +24,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('register', [AuthenticationController::class, 'register']);
 Route::post('login', [AuthenticationController::class, 'login']);
 
-Route::post('roles', [RolesController::class, 'store']);
+
+Route::group(['middleware' => ['api', 'role:super-admin', 'auth:api']], function () {
+    Route::post('organization', [OrganizationController::class, 'store']);
+});
 
 
-Route::group(['middleware' => ['role:super-admin']], function () {
-    //
+
+Route::group(['middleware' => ['api', 'role:user', 'auth:api']], function () {
+    Route::post('products', [ProductController::class, 'store']);
 });
