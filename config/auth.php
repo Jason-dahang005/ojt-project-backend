@@ -16,6 +16,7 @@ return [
     'defaults' => [
         'guard' => 'web',
         'passwords' => 'users',
+        
     ],
 
     /*
@@ -39,9 +40,13 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
-        ],
+             ],
+             'api' => [
+                'driver' => 'passport',
+                'provider' => 'users',
+            ],
     ],
-
+   
     /*
     |--------------------------------------------------------------------------
     | User Providers
@@ -63,6 +68,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+           
+           'admins' => [
+                'driver' => 'eloquent',
+                'model' => App\Models\Admin::class,
+            ]
         ],
 
         // 'users' => [
@@ -94,7 +104,7 @@ return [
             'throttle' => 60,
         ],
     ],
-
+  
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout
