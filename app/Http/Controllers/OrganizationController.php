@@ -37,6 +37,11 @@ class OrganizationController extends Controller
     {
         $input = $request->all();
 
+        $request->validate($input, [
+            'name'          => 'required|unique:organizations',
+            'description'   => 'required'
+        ]);
+
         $org = Organization::create($input);
 
         return response()->json([

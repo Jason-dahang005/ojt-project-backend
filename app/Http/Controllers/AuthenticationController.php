@@ -28,27 +28,48 @@ class AuthenticationController extends BaseController
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
 
+        $token = $user->createToken('personal_access_token')->accessToken;
 
         if(User::count() == 1){
-            $user->assignRole('super-admin');
+            $user->assignRole('admin');
         }else{
             $user->assignRole('user');
         }
 
-        return $this->sendResponse($user, 'Successfully Registered!');
+        return response()->json([
+            'message'       => 'Registered Successfully!',
+            'user'          => $user,
+            'token'         => $token
+        ], 200);
     }
 
     public function login(Request $request)
     {
         $credential = $request->only('email', 'password');
+
         if(Auth::guard('web')->attempt($credential)){
-           $user = User::query()->where('email', $request['email'])->first();
-            $success = $user;
-            //$success['roles'] = $user->roles;
-            $success['token'] = $user->createToken('Personal Access Token')->accessToken;
-            return $this->sendResponse($success, 'Login Succesfully!');
+            $user = User::query()->where('email', $request['email'])->first();
+            $role = $user->roles;
+            $token= $user->createToken('personal_access_token')->accessToken;
+
+            return response()->json([
+                'message'       => 'Logged in Successfully!',
+                'user'          => $user,
+                'token'         => $token
+            ], 200);
+
+            //return $this->sendResponse($success, 'Login Succesfully!');
         }else{
             return $this->sendError('Unauthorized.', ['error' => 'Unauthorized']);
         }
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            'message'   => 'Logged out successfully!'
+        ]);
     }
 }

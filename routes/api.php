@@ -17,20 +17,21 @@ use App\Http\Controllers\OrganizationController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::post('register', [AuthenticationController::class, 'register']);
-Route::post('login', [AuthenticationController::class, 'login']);
-
-
-Route::group(['middleware' => ['api', 'role:super-admin', 'auth:api']], function () {
-    Route::post('organization', [OrganizationController::class, 'store']);
+Route::controller(AuthenticationController::class)->group(function(){
+    Route::post('register', 'register');
+    Route::post('login', 'login');
 });
 
 
+Route::group(['middleware' => ['api', 'role:admin', 'auth:api']], function () {
+    //Route::post('view-organization', [OrganizationController::class, 'index']);
+});
 
 Route::group(['middleware' => ['api', 'role:user', 'auth:api']], function () {
-    Route::post('products', [ProductController::class, 'store']);
+    Route::post('create-organization', [OrganizationController::class, 'store']);
+    Route::post('logout', [AuthenticationController::class, 'logout']);
 });
