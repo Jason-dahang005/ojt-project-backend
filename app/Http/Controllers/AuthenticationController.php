@@ -27,14 +27,8 @@ class AuthenticationController extends BaseController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-
+        $user->assignRole('user');
         $token = $user->createToken('personal_access_token')->accessToken;
-
-        if(User::count() == 1){
-            $user->assignRole('admin');
-        }else{
-            $user->assignRole('user');
-        }
 
         return response()->json([
             'message'       => 'Registered Successfully!',
@@ -66,8 +60,8 @@ class AuthenticationController extends BaseController
 
     public function logout(Request $request)
     {
-        auth()->user()->tokens()->delete();
-
+        $user = Auth::user();
+        $user->tokens()->delete();
         return response()->json([
             'message'   => 'Logged out successfully!'
         ]);

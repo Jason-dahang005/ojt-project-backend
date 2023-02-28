@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,10 +29,17 @@ Route::controller(AuthenticationController::class)->group(function(){
 
 
 Route::group(['middleware' => ['api', 'role:admin', 'auth:api']], function () {
-    //Route::post('view-organization', [OrganizationController::class, 'index']);
+    Route::post('logout', [AuthenticationController::class, 'logout']);
+    Route::get('fetchData', [UserController::class, 'index']);
+
 });
 
 Route::group(['middleware' => ['api', 'role:user', 'auth:api']], function () {
     Route::post('create-organization', [OrganizationController::class, 'store']);
     Route::post('logout', [AuthenticationController::class, 'logout']);
+    Route::get('user', [UserController::class, 'index']);
 });
+
+
+
+
