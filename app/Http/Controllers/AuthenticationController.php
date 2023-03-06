@@ -28,12 +28,10 @@ class AuthenticationController extends BaseController
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
         $user->assignRole('user');
-        $token = $user->createToken('personal_access_token')->accessToken;
 
         return response()->json([
             'message'       => 'Registered Successfully!',
-            'user'          => $user,
-            'token'         => $token
+            'user'          => $user
         ], 200);
     }
 

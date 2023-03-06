@@ -28,16 +28,22 @@ Route::controller(AuthenticationController::class)->group(function(){
 });
 
 
-Route::group(['middleware' => ['api', 'role:admin', 'auth:api']], function () {
-    Route::post('logout', [AuthenticationController::class, 'logout']);
-    Route::get('fetchData', [UserController::class, 'index']);
-
-});
+// Route::group(['middleware' => ['api', 'role:admin', 'auth:api']], function () {
+//     Route::post('logout', [AuthenticationController::class, 'logout']);
+//     Route::post('create-org', [OrganizationController::class, 'store']);
+//     Route::get('org-list', [OrganizationController::class, 'index']);
+//     Route::get('fetchData', [UserController::class, 'index']);
+// });
 
 Route::group(['middleware' => ['api', 'role:user', 'auth:api']], function () {
-    Route::post('create-organization', [OrganizationController::class, 'store']);
+    Route::controller(OrganizationController::class)->group(function () {
+        Route::get('list-organization', 'index');
+        Route::post('create-organization', 'store');
+    });
+
     Route::post('logout', [AuthenticationController::class, 'logout']);
     Route::get('user', [UserController::class, 'index']);
+
 });
 
 

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Auth;
 
 class OrganizationController extends Controller
 {
@@ -14,7 +16,11 @@ class OrganizationController extends Controller
      */
     public function index()
     {
-        //
+        $organization = Organization::where('user_id', auth()->id())->get();
+
+        return response()->json([
+            'organization' => $organization
+        ]);
     }
 
     /**
@@ -35,19 +41,27 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        $input = $request->all();
-
-        $request->validate($input, [
+        $validator = $request->validate([
             'name'          => 'required|unique:organizations',
             'description'   => 'required'
         ]);
 
-        $org = Organization::create($input);
+        if($validator->fails()){
+            return response()-json([
+                'message' => $validator->messages()
+            ]);
+        } else {
+            $organization = new Organization;
+            $organization->name          = $request->name;
+            $organization->description   = $request->description;
+            $organization->user_id       = auth()->id();
+            $organization->save();
 
-        return response()->json([
-            'organization'  => $org,
-            'message'       => 'Organization Successfully Created!'
-        ]);
+            return response()->json([
+                'organization'  => $organization,
+                'message'       => 'Organization Successfully Created!'
+            ]);
+        }
     }
 
     /**
