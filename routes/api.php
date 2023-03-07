@@ -39,6 +39,7 @@ Route::group(['middleware' => ['api', 'role:user', 'auth:api']], function () {
     Route::controller(OrganizationController::class)->group(function () {
         Route::get('list-organization', 'index');
         Route::post('create-organization', 'store');
+        Route::get('organization/{id}', 'show');
     });
 
     Route::post('logout', [AuthenticationController::class, 'logout']);

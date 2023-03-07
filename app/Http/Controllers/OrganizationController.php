@@ -18,9 +18,15 @@ class OrganizationController extends Controller
     {
         $organization = Organization::where('user_id', auth()->id())->get();
 
-        return response()->json([
-            'organization' => $organization
-        ]);
+        if($organization){
+            return response()->json([
+                'organization' => $organization
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'no organization found'
+            ]);
+        }
     }
 
     /**
@@ -41,27 +47,22 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = $request->validate([
+        $request->validate([
             'name'          => 'required|unique:organizations',
             'description'   => 'required'
         ]);
 
-        if($validator->fails()){
-            return response()-json([
-                'message' => $validator->messages()
-            ]);
-        } else {
-            $organization = new Organization;
-            $organization->name          = $request->name;
-            $organization->description   = $request->description;
-            $organization->user_id       = auth()->id();
-            $organization->save();
 
-            return response()->json([
-                'organization'  => $organization,
-                'message'       => 'Organization Successfully Created!'
-            ]);
-        }
+        $organization = new Organization;
+        $organization->name          = $request->name;
+        $organization->description   = $request->description;
+        $organization->user_id       = auth()->id();
+        $organization->save();
+
+        return response()->json([
+            'organization'  => $organization,
+            'message'       => 'Organization Successfully Created!'
+        ]);
     }
 
     /**
@@ -70,9 +71,22 @@ class OrganizationController extends Controller
      * @param  \App\Models\Organization  $organization
      * @return \Illuminate\Http\Response
      */
-    public function show(Organization $organization)
+    public function show(Organization $organization, Request $request)
     {
-        //
+        $organization =  Organization::find($request->id);
+
+        if($organization){
+            return response()->json([
+                'status'        => 'success',
+                'organization'  => $organization
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'no organization found'
+            ]);
+        }
+
+
     }
 
     /**
